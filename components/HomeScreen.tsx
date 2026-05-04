@@ -17,7 +17,7 @@ export default function HomeScreen({
   joinRoom,
 }: HomeScreenProps) {
   const savedName =
-    typeof window !== "undefined" ? localStorage.getItem("typerace_name") ?? "" : "";
+    typeof window !== "undefined" ? localStorage.getItem("versustyping_name") ?? "" : "";
   const [createName, setCreateName] = useState(savedName);
   const [joinCode, setJoinCode] = useState("");
   const [joinName, setJoinName] = useState(savedName);
@@ -70,8 +70,8 @@ export default function HomeScreen({
         <div className="flex items-center justify-center gap-3 mb-4">
           <span className="text-5xl">⌨️</span>
           <h1 className="text-6xl font-black tracking-tight">
-            <span className="text-white">Type</span>
-            <span className="text-green-400">Race</span>
+            <span className="text-white">Versus</span>
+            <span className="text-green-400">Typing</span>
           </h1>
         </div>
         <p className="text-gray-400 text-lg font-medium">
@@ -117,7 +117,7 @@ export default function HomeScreen({
                   const v = e.target.value;
                   setCreateName(v);
                   setJoinName(v);
-                  localStorage.setItem("typerace_name", v);
+                  localStorage.setItem("versustyping_name", v);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 className="w-full bg-[#2a2a2a] border border-[#3a3a3a] text-white rounded-xl px-4 py-3
@@ -195,7 +195,7 @@ export default function HomeScreen({
                   const v = e.target.value;
                   setJoinName(v);
                   setCreateName(v);
-                  localStorage.setItem("typerace_name", v);
+                  localStorage.setItem("versustyping_name", v);
                 }}
                 onKeyDown={(e) => e.key === "Enter" && handleJoin()}
                 className="w-full bg-[#2a2a2a] border border-[#3a3a3a] text-white rounded-xl px-4 py-3

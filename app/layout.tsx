@@ -3,10 +3,10 @@ import "./globals.css";
 import { SocketProvider } from "@/context/SocketContext";
 
 export const metadata: Metadata = {
-  title: "TypeRace — Real-Time Multiplayer Typing Game",
+  title: "VersusTyping — Real-Time Multiplayer Typing Game",
   description:
-    "Challenge your friends to a real-time typing speed race. Create a room, share the code, and see who's the fastest typist.",
-  keywords: ["typing game", "multiplayer", "typing speed", "WPM", "typerace"],
+    "Challenge your friends to a real-time typing speed race on VersusTyping. Create a room, share the code, and see who's the fastest typist.",
+  keywords: ["typing game", "multiplayer", "typing speed", "WPM", "versustyping"],
 };
 
 export default function RootLayout({

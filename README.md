@@ -1,4 +1,4 @@
-# TypeRace Frontend
+# VersusTyping Frontend
 
 A real-time multiplayer typing speed game built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Socket.io-client**.
 
