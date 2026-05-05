@@ -12,23 +12,32 @@ interface LobbyProps {
 export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
   const { code, players, myId, isHost } = gameState;
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
-  const handleCopy = async () => {
+  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
     } catch {
-      // fallback
       const el = document.createElement("textarea");
-      el.value = code;
+      el.value = text;
       document.body.appendChild(el);
       el.select();
       document.execCommand("copy");
       document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleCopy = async () => {
+    await copyToClipboard(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleCopyLink = async () => {
+    const link = `${window.location.origin}/room/${code}`;
+    await copyToClipboard(link);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
   };
 
   const MAX_PLAYERS = 4;
@@ -65,7 +74,7 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
                 id="copy-code-btn"
                 onClick={handleCopy}
                 className="p-2 rounded-lg bg-[#2a2a2a] hover:bg-[#3a3a3a] transition-colors text-gray-400 hover:text-white"
-                title="Copy code"
+                title="Copy room code"
               >
                 {copied ? (
                   <span className="text-green-400 text-sm font-semibold">✓</span>
@@ -79,9 +88,41 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
             </div>
             {copied && (
               <p className="text-green-400 text-xs mt-2 animate-fade-in">
-                Copied to clipboard!
+                Code copied!
               </p>
             )}
+
+            {/* Invite link button */}
+            <button
+              id="copy-invite-link-btn"
+              onClick={handleCopyLink}
+              className={`mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border transition-all duration-200 text-sm font-medium ${
+                linkCopied
+                  ? "border-green-500/60 bg-green-500/10 text-green-400"
+                  : "border-[#3a3a3a] bg-[#242424] text-gray-400 hover:border-blue-500/50 hover:bg-blue-500/5 hover:text-blue-400"
+              }`}
+              title="Copy invite link"
+            >
+              {linkCopied ? (
+                <>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Invite link copied!</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                  </svg>
+                  <span>Copy Invite Link</span>
+                </>
+              )}
+            </button>
+            <p className="text-gray-600 text-xs mt-2">
+              Friends click the link → enter name → join instantly
+            </p>
           </div>
 
           {/* Player list */}
