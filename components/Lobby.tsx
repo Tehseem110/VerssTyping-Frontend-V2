@@ -31,6 +31,7 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
     }
   };
 
+  const MAX_PLAYERS = 4;
   const hasEnoughPlayers = players.length >= 2;
 
   return (
@@ -42,7 +43,7 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
             Waiting Room
           </h1>
           <p className="text-gray-500 text-sm">
-            Share the room code with your opponent
+            Share the room code with your opponents (up to 4 players)
           </p>
         </div>
 
@@ -86,7 +87,7 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
           {/* Player list */}
           <div>
             <p className="text-xs uppercase tracking-widest text-gray-500 font-semibold mb-3">
-              Players ({players.length}/2)
+              Players ({players.length}/{MAX_PLAYERS})
             </p>
             <div className="space-y-2">
               {players.map((player) => {
@@ -130,19 +131,24 @@ export default function Lobby({ gameState, onStart, onLeave }: LobbyProps) {
                 );
               })}
 
-              {/* Waiting slot */}
-              {players.length < 2 && (
-                <div className="flex items-center gap-3 bg-[#1e1e1e] border border-dashed border-[#2a2a2a] rounded-xl px-4 py-3">
+              {/* Waiting slots — one per empty spot, up to MAX_PLAYERS */}
+              {Array.from({ length: MAX_PLAYERS - players.length }).map((_, i) => (
+                <div
+                  key={`waiting-${i}`}
+                  className="flex items-center gap-3 bg-[#1e1e1e] border border-dashed border-[#2a2a2a] rounded-xl px-4 py-3"
+                >
                   <div className="flex gap-1">
                     <span className="wait-dot w-2 h-2 rounded-full bg-gray-600" />
                     <span className="wait-dot w-2 h-2 rounded-full bg-gray-600" />
                     <span className="wait-dot w-2 h-2 rounded-full bg-gray-600" />
                   </div>
                   <span className="text-gray-500 text-sm italic">
-                    Waiting for opponent to join…
+                    {i === 0 && players.length < 2
+                      ? "Waiting for players to join…"
+                      : "Open slot"}
                   </span>
                 </div>
-              )}
+              ))}
             </div>
           </div>
 

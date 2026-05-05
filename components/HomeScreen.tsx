@@ -251,7 +251,7 @@ export default function HomeScreen({
         <div className="flex items-center justify-center gap-8 text-gray-500 text-sm">
           <Step n={1} label="Create or join a room" />
           <div className="w-px h-6 bg-[#2a2a2a]" />
-          <Step n={2} label="Wait for your opponent" />
+          <Step n={2} label="Wait for players to join" />
           <div className="w-px h-6 bg-[#2a2a2a]" />
           <Step n={3} label="Type as fast as you can!" />
         </div>

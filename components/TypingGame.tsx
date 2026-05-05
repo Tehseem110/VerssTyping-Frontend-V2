@@ -18,7 +18,7 @@ export default function TypingGame({ gameState, onProgress, onFinished }: Typing
   const containerRef = useRef<HTMLDivElement>(null);
 
   const myPlayer = players.find((p) => p.id === myId);
-  const opponent = players.find((p) => p.id !== myId);
+  const opponents = players.filter((p) => p.id !== myId);
 
   const handleProgress = useCallback(
     (progress: number, wpm: number) => {
@@ -48,16 +48,24 @@ export default function TypingGame({ gameState, onProgress, onFinished }: Typing
       onClick={handleContainerClick}
       className="min-h-screen bg-[#0f0f0f] flex flex-col"
     >
-      {/* ── Top bar: player cards ──────────────────────────────────────────── */}
+      {/* ── Top bar: all player cards ──────────────────────────────────────── */}
       <div className="border-b border-[#2a2a2a] bg-[#1a1a1a]">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {myPlayer && (
-              <PlayerCard player={myPlayer} isMe={true} />
-            )}
-            {opponent ? (
-              <PlayerCard player={opponent} isMe={false} />
-            ) : (
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div
+            className={`grid gap-4 ${
+              players.length <= 2
+                ? "grid-cols-1 md:grid-cols-2"
+                : players.length === 3
+                ? "grid-cols-1 md:grid-cols-3"
+                : "grid-cols-2 md:grid-cols-4"
+            }`}
+          >
+            {myPlayer && <PlayerCard player={myPlayer} isMe={true} />}
+            {opponents.map((opp) => (
+              <PlayerCard key={opp.id} player={opp} isMe={false} />
+            ))}
+            {/* Placeholder when still only 1 player */}
+            {players.length < 2 && (
               <div className="bg-[#242424] rounded-xl p-4 border border-[#2a2a2a] flex items-center justify-center">
                 <span className="text-gray-600 text-sm italic">Waiting for opponent…</span>
               </div>
