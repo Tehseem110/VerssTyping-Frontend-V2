@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SocketProvider } from "@/context/SocketContext";
+import MixpanelProvider from "@/components/MixpanelProvider";
 
 export const metadata: Metadata = {
   title: "VersusTyping — Real-Time Multiplayer Typing Game",
@@ -25,9 +26,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        <SocketProvider>
-          {children}
-        </SocketProvider>
+        <MixpanelProvider>
+          <SocketProvider>
+            {children}
+          </SocketProvider>
+        </MixpanelProvider>
       </body>
     </html>
   );

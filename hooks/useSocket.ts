@@ -3,6 +3,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import type { GameState, Player } from "@/types";
+import {
+  trackRoomCreated,
+  trackRoomJoined,
+  trackGameStarted,
+  trackGameCompleted,
+  trackRoomError,
+  trackRoomLeft,
+} from "@/lib/mixpanel";
 
 const INITIAL_STATE: GameState = {
   code: "",
@@ -61,6 +69,8 @@ export function useSocket() {
         players,
         status: "waiting",
       }));
+      // Track: host created a room
+      trackRoomCreated({ playerName: gameStateRef.current.myName });
     });
 
     // ── room_updated ────────────────────────────────────────────────────────
@@ -74,6 +84,11 @@ export function useSocket() {
       setTimeout(() => {
         setGameState((prev) => ({ ...prev, error: null }));
       }, 3000);
+      // Track errors (room full, code not found, etc.)
+      trackRoomError({
+        roomCode: gameStateRef.current.code,
+        errorMessage: message,
+      });
     });
 
     // ── countdown ───────────────────────────────────────────────────────────
@@ -94,6 +109,13 @@ export function useSocket() {
         status: "playing",
         countdown: null,
       }));
+      // Track: game is live
+      const snap = gameStateRef.current;
+      trackGameStarted({
+        roomCode: snap.code,
+        playerCount: snap.players.length,
+        playerName: snap.myName,
+      });
     });
 
     // ── player_progress ─────────────────────────────────────────────────────
@@ -108,6 +130,26 @@ export function useSocket() {
         players,
         status: "finished",
       }));
+      // Track: race complete — compute rank for local player
+      const snap = gameStateRef.current;
+      const sorted = [...players].sort((a, b) => {
+        if (a.finishedAt && b.finishedAt) return a.finishedAt - b.finishedAt;
+        if (a.finishedAt) return -1;
+        if (b.finishedAt) return 1;
+        return b.wpm - a.wpm;
+      });
+      const myRankIndex = sorted.findIndex((p) => p.id === snap.myId);
+      const myPlayer = players.find((p) => p.id === snap.myId);
+      if (myPlayer) {
+        trackGameCompleted({
+          roomCode: snap.code,
+          playerName: snap.myName,
+          wpm: myPlayer.wpm,
+          playerCount: players.length,
+          rank: myRankIndex + 1,
+          isWinner: myRankIndex === 0,
+        });
+      }
     });
 
     // ── player_left ──────────────────────────────────────────────────────────
@@ -148,6 +190,8 @@ export function useSocket() {
       code: upperCode,
     }));
     socket.emit("join_room", { code: upperCode, name: name.trim() });
+    // Track: player joining an existing room
+    trackRoomJoined({ roomCode: upperCode, playerName: name.trim() });
   }, []);
 
   const startGame = useCallback((code: string) => {
@@ -163,6 +207,8 @@ export function useSocket() {
   }, []);
 
   const leaveRoom = useCallback((code: string) => {
+    const snap = gameStateRef.current;
+    trackRoomLeft({ roomCode: code, playerName: snap.myName, reason: "manual" });
     socketRef.current?.emit("leave_room", { code });
     setGameState(INITIAL_STATE);
   }, []);
